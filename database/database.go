@@ -3,6 +3,7 @@ package database
 import (
 	"log"
 
+	"example.com/restyt/models"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -17,4 +18,7 @@ func ConnectDatabase() {
 
 	log.Println("Database connected.")
 	DB = database
+
+	database.AutoMigrate(&models.Video{})
+	database.AutoMigrate(&models.User{})
 }

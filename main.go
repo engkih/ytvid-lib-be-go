@@ -18,6 +18,7 @@ func main() {
 
 	router.POST("/api/vidpost", controllers.VideoPost)
 	router.POST("/api/compost", controllers.CommentPost)
+	router.POST("/api/userpost", controllers.Register)
 
 	router.PUT("/api/video/:vidId", controllers.VideoUpdate)
 	router.PUT("/api/comment/:comId", controllers.CommentUpdate)
