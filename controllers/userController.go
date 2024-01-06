@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"strconv"
+	"net/http"
 	"time"
 
 	"example.com/restyt/database"
@@ -65,28 +65,26 @@ func Login(c *gin.Context) {
 	}
 
 	// JWT
-	claims := jwt.NewWithClaims(jwt.SigningMethodES256, jwt.RegisteredClaims{
-		Issuer:    strconv.Itoa(int(user.Id)),
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
+
+	// Create a new token object, specifying signing method and the claims
+	// you would like it to contain.
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"Issuer":   user.Id,
+		"EpiresAt": time.Now().Add(time.Hour * 24).Unix(),
 	})
 
-	token, err = claims.SignedString([]byte(SecretKey))
+	// Sign and get the complete encoded token as a string using the secret
+	SecretKey := "0912uiejewfwoefiej"
+	tokenString, err := token.SignedString([]byte(SecretKey))
 
 	if err != nil {
-		c.JSON(500, gin.H{
-			"message": "could not login",
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "failed to create token",
 		})
 	}
 
-	//TODO, JWT COOKIE IN GIN-GONIC
-
-	// cookie := map[string]any{
-	// 	"Name:":	"jwt",
-	// 	"Value":	token,
-	// 	"Expires":	time.Now().Add(time.Hour*24),
-	// 	"HTTPOnly":	true,
-	// }
-
-	// c.Cookie()
+	c.SetSameSite(http.SameSiteLaxMode)
+	c.SetCookie("Authorization", tokenString, 3600*24, "", "", false, true)
+	c.JSON(http.StatusOK, gin.H{})
 
 }
