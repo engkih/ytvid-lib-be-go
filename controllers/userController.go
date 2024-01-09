@@ -39,6 +39,7 @@ func Register(c *gin.Context) {
 
 func Login(c *gin.Context) {
 
+	// Parse request body
 	var reqBody struct {
 		Email    string
 		Password string
@@ -46,6 +47,7 @@ func Login(c *gin.Context) {
 
 	c.Bind(&reqBody)
 
+	// Search for user based on email
 	var user models.User
 
 	database.DB.Where("email = ?", reqBody.Email).First(&user)
@@ -56,6 +58,7 @@ func Login(c *gin.Context) {
 		})
 	}
 
+	// Compare the password
 	err := bcrypt.CompareHashAndPassword(user.Password, []byte(reqBody.Password))
 	if err != nil {
 		c.JSON(400, gin.H{
@@ -82,6 +85,7 @@ func Login(c *gin.Context) {
 		})
 	}
 
+	// Set cookie content and send it to the client
 	c.SetSameSite(http.SameSiteLaxMode)
 	c.SetCookie("Authorization", tokenString, 3600*24, "", "", false, true)
 	c.JSON(http.StatusOK, gin.H{})
@@ -89,7 +93,40 @@ func Login(c *gin.Context) {
 }
 
 func User(c *gin.Context) {
+
+	user, _ := c.Get("user")
+
 	c.JSON(http.StatusAccepted, gin.H{
-		"message": "logged in",
+		"user": user,
 	})
+}
+
+func Logout(c *gin.Context) {
+	// JWT
+
+	user, _ := c.Get("user")
+	// Create a new token object, specifying signing method and the claims
+	// you would like it to contain.
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"Issuer":    user.(models.User).Id,
+		"ExpiresAt": time.Now().Add(-time.Hour * 24).Unix(),
+	})
+
+	// Sign and get the complete encoded token as a string using the secret
+	SecretKey := "0912uiejewfwoefiej"
+	tokenString, err := token.SignedString([]byte(SecretKey))
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "failed to create token",
+		})
+	}
+
+	// Set cookie content and send it to the client
+	c.SetSameSite(http.SameSiteLaxMode)
+	c.SetCookie("Authorization", tokenString, -3600*24, "", "", false, true)
+	c.JSON(http.StatusOK, gin.H{
+		"message": "logged out",
+	})
+
 }

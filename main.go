@@ -17,6 +17,7 @@ func main() {
 	router.GET("/api/video/:vidId", controllers.VideoShow)
 	router.GET("/api/comindex", controllers.CommentIndex)
 	router.GET("/api/user", middleware.Authentication, controllers.User)
+	router.GET("/api/logout", middleware.Authentication, controllers.Logout)
 
 	router.POST("/api/vidpost", controllers.VideoPost)
 	router.POST("/api/compost", controllers.CommentPost)
