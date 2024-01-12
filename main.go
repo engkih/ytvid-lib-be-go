@@ -31,6 +31,7 @@ func main() {
 	router.GET("/api/comindex", controllers.CommentIndex)
 	router.GET("/api/user", middleware.Authentication, controllers.User)
 	router.GET("/api/logout", middleware.Authentication, controllers.Logout)
+	router.GET("/api/check", middleware.CookieCheck)
 
 	router.POST("/api/vidpost", controllers.VideoPost)
 	router.POST("/api/compost", controllers.CommentPost)

@@ -11,15 +11,17 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-const SecretKey = "0912uiejewfwoefiej"
+// const SecretKey = "0912uiejewfwoefiej"
 
-func Authentication(c *gin.Context) {
+func CookieCheck(c *gin.Context) {
 
 	// Get cookie from client.
 	tokenString, err := c.Cookie("Authorization")
 
 	if err != nil {
-		c.AbortWithStatus(http.StatusUnauthorized)
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "unauthorized",
+		})
 	}
 	// Parse JWT.
 	// Parse takes the token string and a function for looking up the key. The latter is especially
@@ -39,13 +41,13 @@ func Authentication(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"message": "unauthorized",
 		})
-	}
-
-	if claims, ok := token.Claims.(jwt.MapClaims); ok {
+	} else if claims, ok := token.Claims.(jwt.MapClaims); ok {
 
 		//Check expiration date.
 		if float64(time.Now().Unix()) > claims["ExpiresAt"].(float64) {
-			c.AbortWithStatus(http.StatusUnauthorized)
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"message": "unauthorized",
+			})
 		}
 
 		// Find user based on Id.
@@ -53,13 +55,12 @@ func Authentication(c *gin.Context) {
 		database.DB.First(&user, claims["Issuer"])
 
 		if user.Id == 0 {
-			c.AbortWithStatus(http.StatusUnauthorized)
+			c.JSON(http.StatusNotFound, gin.H{
+				"message": "user not found",
+			})
 		}
-		// Set user data for controller (c.Set("user", user)).
-		c.Set("user", user)
 
-		// Send user data to the controller (c.Next()).
-		c.Next()
+		c.JSON(http.StatusAccepted, gin.H{})
 
 		fmt.Println(claims["Issuer"], claims["ExpiresAt"])
 	} else {
