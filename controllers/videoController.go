@@ -10,6 +10,7 @@ func VideoPost(c *gin.Context) {
 
 	// Pull req body and put it into "video" variable.
 	var reqBody struct {
+		UserId      int
 		VideoUrl    string
 		Title       string
 		Description string
@@ -17,7 +18,7 @@ func VideoPost(c *gin.Context) {
 
 	c.Bind(&reqBody)
 
-	video := models.Video{VideoUrl: reqBody.VideoUrl, Title: reqBody.Title, Description: reqBody.Description}
+	video := models.Video{UserId: reqBody.UserId, VideoUrl: reqBody.VideoUrl, Title: reqBody.Title, Description: reqBody.Description}
 
 	// Add video to the database.
 	addVideo := database.DB.Create(&video)
