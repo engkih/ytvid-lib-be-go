@@ -26,7 +26,7 @@ func main() {
 
 	database.ConnectDatabase()
 
-	router.GET("/api/vidindex", controllers.VideoIndex)
+	router.GET("/api/vidindex", middleware.Authentication, controllers.VideoIndex)
 	router.GET("/api/video/:vidId", controllers.VideoShow)
 	router.GET("/api/comindex", controllers.CommentIndex)
 	router.GET("/api/user", middleware.Authentication, controllers.User)

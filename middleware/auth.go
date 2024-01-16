@@ -37,11 +37,9 @@ func Authentication(c *gin.Context) {
 	})
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"message": "unauthorized",
+			"message": "unauthorizedsss",
 		})
-	}
-
-	if claims, ok := token.Claims.(jwt.MapClaims); ok {
+	} else if claims, ok := token.Claims.(jwt.MapClaims); ok {
 
 		//Check expiration date.
 		if float64(time.Now().Unix()) > claims["ExpiresAt"].(float64) {

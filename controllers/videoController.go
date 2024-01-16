@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"fmt"
+
 	"example.com/restyt/database"
 	"example.com/restyt/models"
 	"github.com/gin-gonic/gin"
@@ -35,10 +37,18 @@ func VideoPost(c *gin.Context) {
 }
 
 func VideoIndex(c *gin.Context) {
+	user, _ := c.Get("user")
+
+	userId := user.(models.User).Id
+
 	var videos []models.Video
-	database.DB.Find(&videos)
+	// database.DB.Find(&videos)
+	// database.DB.Where("UserId <> ?", ids).Find(&videos)
+	database.DB.Where("user_id = ?", userId).Find(&videos)
+	fmt.Println(userId)
 
 	c.JSON(200, gin.H{
+		"User":   user,
 		"videos": videos,
 	})
 }
