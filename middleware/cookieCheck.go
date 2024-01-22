@@ -60,9 +60,11 @@ func CookieCheck(c *gin.Context) {
 			})
 		}
 
-		c.JSON(http.StatusAccepted, gin.H{})
+		c.JSON(http.StatusAccepted, gin.H{
+			"UserDat": user,
+		})
 
-		fmt.Println(claims["Issuer"], claims["ExpiresAt"])
+		// fmt.Println(claims["Issuer"], claims["ExpiresAt"])
 	} else {
 		fmt.Println(err)
 	}
