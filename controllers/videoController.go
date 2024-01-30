@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fmt"
+	"net/http"
 
 	"example.com/restyt/database"
 	"example.com/restyt/models"
@@ -45,7 +45,7 @@ func VideoIndex(c *gin.Context) {
 	// database.DB.Find(&videos)
 	// database.DB.Where("UserId <> ?", ids).Find(&videos)
 	database.DB.Where("user_id = ?", userId).Find(&videos)
-	fmt.Println(userId)
+	// fmt.Println(userId)
 
 	c.JSON(200, gin.H{
 		"User":   user,
@@ -54,14 +54,18 @@ func VideoIndex(c *gin.Context) {
 }
 
 func VideoShow(c *gin.Context) {
+
 	vidId := c.Param("vidId")
+	user, _ := c.Get("user")
 
 	var video models.Video
 
 	database.DB.First(&video, vidId)
 
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusAccepted, gin.H{
+		"user":  user,
 		"video": video,
+		"test":  "abcdefg",
 	})
 }
 

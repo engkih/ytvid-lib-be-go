@@ -57,7 +57,7 @@ func Authentication(c *gin.Context) {
 		c.Set("user", user)
 
 		// Send user data to the controller (c.Next()).
-		c.Next()
+		// c.Next()
 
 		fmt.Println(claims["Issuer"], claims["ExpiresAt"])
 	} else {

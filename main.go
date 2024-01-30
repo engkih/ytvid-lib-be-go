@@ -17,7 +17,7 @@ func main() {
 
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173"},
-		AllowMethods:     []string{"GET", "POST"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Content-Type", "Content-Length", "Accept-Encoding", "Authorization", "Cache-Control"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
@@ -27,7 +27,7 @@ func main() {
 	database.ConnectDatabase()
 
 	router.GET("/api/vidindex", middleware.Authentication, controllers.VideoIndex)
-	router.GET("/api/video/:vidId", controllers.VideoShow)
+	router.GET("/api/video/:vidId", middleware.Authentication, controllers.VideoShow)
 	router.GET("/api/comindex", controllers.CommentIndex)
 	router.GET("/api/user", middleware.Authentication, controllers.User)
 	router.GET("/api/logout", middleware.Authentication, controllers.Logout)
@@ -41,7 +41,7 @@ func main() {
 	router.PUT("/api/video/:vidId", controllers.VideoUpdate)
 	router.PUT("/api/comment/:comId", controllers.CommentUpdate)
 
-	router.DELETE("/api/video/:vidId", controllers.VideoDelete)
+	router.DELETE("/api/video/:vidId", middleware.Authentication, controllers.VideoDelete)
 	router.DELETE("/api/comment/:comId", controllers.CommentDelete)
 
 	router.Run(serverAddrs)
